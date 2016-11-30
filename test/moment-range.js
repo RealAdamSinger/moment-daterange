@@ -1159,7 +1159,7 @@ describe('DateRange', function() {
     })
   })
 
-  describe('#shiftForward', function() {
+  describe('#shiftForward()', function() {
     it('should shift actualStart and actualEnd forward within limits', function() {
         var start = moment("2011-03-02T00:00:00.000Z");
         var end = moment("2011-05-06T00:00:00.000Z");
@@ -1192,6 +1192,22 @@ describe('DateRange', function() {
         range.actualEnd.isSame(moment("2011-03-08T00:00:00.000Z")).should.be.true;
         expect(range.start).to.be.an('undefined');
         expect(range.end).to.be.an('undefined');
+    })
+
+    it('should shift duration length of one actual duration forward', function() {
+        var start = moment("2011-03-02T00:00:00.000Z");
+        var end = moment("2011-03-06T00:00:00.000Z");
+        var lowerLimit = moment("2011-03-01T00:00:00.000Z");
+        var upperLimit = moment("2011-05-04T00:00:00.000Z");
+        var range = moment.range(start, end, {
+          lowerLimit,
+          upperLimit
+        });
+
+        range.shiftForward();
+
+        range.actualStart.isSame(moment("2011-03-06T00:00:00.000Z")).should.be.true;
+        range.actualEnd.isSame(moment("2011-03-10T00:00:00.000Z")).should.be.true;
     })
   })
 
@@ -1229,6 +1245,22 @@ describe('DateRange', function() {
           range.actualEnd.isSame(moment("2011-02-26T00:00:00.000Z")).should.be.true;
           expect(range.start).to.be.an('undefined');
           expect(range.end).to.be.an('undefined');
+    })
+
+    it('should shift duration length of one actual duration backward', function() {
+        var start = moment("2011-03-02T00:00:00.000Z");
+        var end = moment("2011-03-06T00:00:00.000Z");
+        var lowerLimit = moment("2011-03-01T00:00:00.000Z");
+        var upperLimit = moment("2011-05-04T00:00:00.000Z");
+        var range = moment.range(start, end, {
+          lowerLimit,
+          upperLimit
+        });
+
+        range.shiftBackward();
+
+        range.actualStart.isSame(moment("2011-02-26T00:00:00.000Z")).should.be.true;
+        range.actualEnd.isSame(moment("2011-03-02T00:00:00.000Z")).should.be.true;
     })
   })
 
