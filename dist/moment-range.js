@@ -14,6 +14,22 @@
   }
 }(this, function (moment) {
 
+(function (root, factory) {
+  if (typeof define === 'function' && define.amd) {
+    // AMD. Register as an anonymous module unless amdModuleId is set
+    define(["moment"], function (a0) {
+      return (root['DateRange'] = factory(a0));
+    });
+  } else if (typeof module === 'object' && module.exports) {
+    // Node. Does not work with strict CommonJS, but
+    // only CommonJS-like environments that support module.exports,
+    // like Node.
+    module.exports = factory(require("moment"));
+  } else {
+    root['DateRange'] = factory(root["moment"]);
+  }
+}(this, function (moment) {
+
 //-----------------------------------------------------------------------------
 // Contstants
 //-----------------------------------------------------------------------------
@@ -446,6 +462,10 @@ moment.fn.within = function(range) {
 //-----------------------------------------------------------------------------
 
 
+
+return DateRange;
+
+}));
 
 return DateRange;
 
