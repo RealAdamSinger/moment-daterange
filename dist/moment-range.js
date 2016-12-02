@@ -14,22 +14,6 @@
   }
 }(this, function (moment) {
 
-(function (root, factory) {
-  if (typeof define === 'function' && define.amd) {
-    // AMD. Register as an anonymous module unless amdModuleId is set
-    define(["moment"], function (a0) {
-      return (root['DateRange'] = factory(a0));
-    });
-  } else if (typeof module === 'object' && module.exports) {
-    // Node. Does not work with strict CommonJS, but
-    // only CommonJS-like environments that support module.exports,
-    // like Node.
-    module.exports = factory(require("moment"));
-  } else {
-    root['DateRange'] = factory(root["moment"]);
-  }
-}(this, function (moment) {
-
 //-----------------------------------------------------------------------------
 // Contstants
 //-----------------------------------------------------------------------------
@@ -68,18 +52,24 @@ var INTERVALS = {
  * @constructor
  * @param {!String} range String formatted as an IS0 8601 time interval
  */
+
+
 function DateRange(start, end, options) {
 
-  if(options === undefined && ( (typeof end === 'object') && !(end instanceof moment || end instanceof Date) )){
+  if (options === undefined && ( (typeof end === 'object') && !(end instanceof moment || end instanceof Date) )) {
     options = end;
-
-    // e = end = undefined;
+    end = undefined;
   }
 
   this.options = options = options || {};
+  
+  this._setRange = (options.contain) ? this._containIntersect : this._intersect;
+  
+  this.set(start, end, options);
+}
 
-  if(options.limit !== false) this.setLimits(options);
-  this.set(start, end);
+DateRange.prototype._setDuration = function() {
+  (this.start !== undefined ) ? this.duration = moment.duration(this.end - this.start) : undefined;
 }
 
 /**
@@ -178,7 +168,7 @@ DateRange.prototype.add = function(other) {
  *
  * @param {!DateRange} other A date range to substract from this one
  *
- * @return {!Array<DateRange>}
+ * @return {!Array<DateRange>} Returns an array of new `DateRange`, or empty array if all time is subtracted 
  */
 DateRange.prototype.subtract = function(other) {
   var start = this.start;
@@ -346,67 +336,336 @@ DateRange.prototype.diff = function(unit) {
   return this.end.diff(this.start, unit);
 };
 
-DateRange.prototype.set = function(start, end) {
-  var parts;
-  var s = start;
-  var e = end;
+/**
+ *  Allows the date to be taken in different forms 
+ * 
+ * @param {date string|date object|moment object} - start
+ * @param {date string|date object|moment object} - end
+ * 
+ * @return [moment, moment]
+ */
+DateRange.prototype.parseRange = function (start, end) {
 
-  if (arguments.length === 1 || end === undefined) {
+    if (end === undefined) {
+    if (typeof start === 'string') start = start.split('/');
     if (typeof start === 'object' && start.length === 2) {
-      s = start[0];
-      e = start[1];
+       end = start[1];
+       start = start[0];
+     }
     }
-    else if (typeof start === 'string') {
-      parts = start.split('/');
-      s = parts[0];
-      e = parts[1];
-    }
-  }
-  
-  if(this.options.limit !== false){
-    this.actualStart = (s === null) ? moment(-8640000000000000) : moment(s);
-    this.actualEnd   = (e === null) ? moment(8640000000000000) : moment(e);
-    this.actualRange = moment.range(this.actualStart, this.actualEnd, {limit:false});
 
-    this._intersect();
-  }
-  else {
-    this.start = (s === null) ? moment(-8640000000000000) : moment(s);
-    this.end   = (e === null) ? moment(8640000000000000) : moment(e);
-  }
+  return [(!start) ? moment(-8640000000000000) : moment(start),
+          (!end) ? moment(8640000000000000) : moment(end)];
 }
 
-DateRange.prototype.setLimits = function (options) {
-  this.lowerLimit = moment(-8640000000000000);
-  this.upperLimit = moment(8640000000000000);
-  this.limitRange = moment.range(this.lowerLimit, this.upperLimit, {limit: false});
+/**
+ * Sets actual start date, end date, or both
+ * 
+ * @param {date string|date object|moment object} - start
+ * @param {date string|date object|moment object} - end
+ * 
+ * @return [moment, moment]
+ */
+DateRange.prototype._set = function(start, end){
+    var parsedRange = this.parseRange(start, end);
+    
+    this.actualStart = parsedRange[0];
+    this.actualEnd   = parsedRange[1];
 }
 
+/**
+ * Sets range of values
+ * calculates duration from actual end to start
+ * null or undefined values will clear the date
+ * 
+ * @param {date string|date object|moment object} - start
+ * @param {date string|date object|moment object} - end
+ * @param {date string|date object|moment object} - upperlimit
+ * @param {date string|date object|moment object} - lowerlimit
+ * @param {boolean} - sets contain range boolean
+ * 
+ * @return this.start
+ * @return this.end
+ */
+DateRange.prototype.set = function (start, end, options) {
+    this._set(start, end);
+    if (options) this._setLimit(options.lowerLimit, options.upperLimit);
+
+    this.actualDuration = moment.duration(this.actualEnd - this.actualStart);
+
+    this._setRange();
+}
+
+Object.defineProperties(DateRange.prototype, {
+       actualRange: {
+           get: function () {
+               return moment.range(this.actualStart, this.actualEnd);
+           },
+           enumerable: true
+       },
+       //sets the default unit for the rate object
+       limitRange: {
+           get: function () {
+               return moment.range(this.lowerLimit, this.upperLimit);
+           },
+           enumerable: true
+       },
+   });
+
+/**
+ * Sets upper, lower, or both limits
+ * Calculates duration from upperlimit to lowerlimit
+ * 
+ * @param {date string|date object|moment object} - lowerLimit
+ * @param {date string|date object|moment object} - upperlimit
+ * 
+ * @return [moment, moment]
+ */
+DateRange.prototype._setLimit = function (lowerLimit, upperLimit) {
+  var parsedLimit = this.parseRange(lowerLimit, upperLimit);
+
+  this.lowerLimit = parsedLimit[0];
+  this.upperLimit = parsedLimit[1];
+  this.limitDuration = moment.duration(this.upperLimit - this.lowerLimit);  
+}
+
+/**
+ * Sets range of values when requiring new limits
+ * null or undefined values will clear the date
+ * 
+ * @param {date string|date object|moment object} - upperlimit
+ * @param {date string|date object|moment object} - lowerlimit
+ * 
+ * @return this.start
+ * @return this.end
+ */
+DateRange.prototype.setLimit = function (lowerLimit, upperLimit) {
+  this._setLimit(lowerLimit, upperLimit);
+
+  this._setRange();
+}
+
+/**
+ * calculates start and end when !options.contains
+ * 
+ * @return this.start 
+ * @return this.end
+ * 
+ * calculates duration from start to end
+ */
 DateRange.prototype._intersect = function() {
-  var limit = this.limitRange;
-  var actual = this.actualRange;
-
-  if ((actual.start <= limit.start) && (limit.start < actual.end) && (actual.end < limit.end)) {
-    this.start = limit.start;
-    this.end = actual.end;
-  }
-  else if ((limit.start < actual.start) && (actual.start < limit.end) && (limit.end <= actual.end)) {
-    this.start = actual.start;
-    this.end = limit.end;
-  }
-  else if ((limit.start < actual.start) && (actual.start <= actual.end) && (actual.end < limit.end)) {
-    this.start = actual.start;
-    this.end = actual.end;
-  }
-  else if ((actual.start <= limit.start) && (limit.start <= limit.end) && (limit.end <= actual.end)) {
-    this.start = limit.start;
-    this.end = limit.end;
-  }
+  var lowerLimit = this.lowerLimit;
+  var upperLimit = this.upperLimit;
+  var actualStart = this.actualStart;
+  var actualEnd = this.actualEnd;
+    
+  if(upperLimit < actualStart || actualEnd < lowerLimit) {
+    //if does not overlap
+    this.start = this.end = undefined;    
+  } 
   else {
-    throw('Cannont set range outside of range limits');
+    //if overlaps
+    if (actualStart <= lowerLimit) {
+      this.start = lowerLimit;
+    } else {
+      this.start = actualStart;
+    }
+
+    if (actualEnd <= upperLimit) {
+      this.end = actualEnd;
+    } else {
+      this.end = upperLimit; 
+    }
   }
+  this._setDuration();
 };
 
+ /**
+ * sets start to new value
+ * null or undefined values will clear the date
+ * 
+ * @param {date string|date object|moment object} - start
+ * 
+ * @return this.start 
+ * @return this.end
+ * 
+ */
+DateRange.prototype.setStart = function(start) {
+ this.set(start, this.actualEnd);
+}
+
+ /**
+ * sets end to new value
+ * null or undefined values will clear the date
+ * 
+ * @param {date string|date object|moment object} - end
+ * 
+ * @return this.start 
+ * @return this.end
+ * 
+ */
+DateRange.prototype.setEnd = function(end) {
+  this.set(this.actualStart, end);
+}
+
+ /**
+ * sets lowerlimit to new value
+ * null or undefined values will clear the date
+ * 
+ * @param {date string|date object|moment object} - lowerlimit
+ * 
+ * @return this.start 
+ * @return this.end
+ * 
+ */
+DateRange.prototype.setLowerLimit = function(lowerLimit) {
+  this.setLimit(lowerLimit, this.upperLimit);
+}
+
+ /**
+ * sets upperlimit to new value
+ * 
+ * @param {date string|date object|moment object} - upperlimit
+ * 
+ * @return this.start 
+ * @return this.end
+ * 
+ */
+DateRange.prototype.setUpperLimit = function(upperLimit) {
+  this.setLimit(this.lowerLimit, upperLimit);
+}
+
+ /**
+ * clears start and/or end values
+ * Undefined parameters clear both.
+ * 
+ * @param {boolean} - clearStart
+ * @param {boolean} - clearEnd
+ * 
+ * @return this.start 
+ * @return this.end
+ * 
+ */
+DateRange.prototype.clear = function(clearStart, clearEnd) {
+  var start = clearStart === false ? this.actualStart : undefined;
+  var end = clearEnd === false ? this.actualEnd : undefined;
+  this.set(start, end);
+}
+
+ /**
+ * clears upper and/or lower limts
+ * 
+ * @param {boolean} - clear lower limit
+ * @param {boolean} - clear upper limit
+ * 
+ * @return this.start 
+ * @return this.end
+ * 
+ */
+DateRange.prototype.clearLimits = function(clearLowerLimit, clearUpperLimit) {
+  var lowerLimit = clearLowerLimit === false ? this.lowerLimit : undefined;
+  var upperLimit = clearUpperLimit === false ? this.upperLimit : undefined;
+  this.setLimit(lowerLimit, upperLimit);
+}
+
+/** 
+ * Shifts start and end values forward
+ *  If no limits are set the time will shift indefinitely
+ * 
+ * @param {number}
+ * 
+ * @return this.start
+ * @return this.end
+ */
+DateRange.prototype.shiftForward = function(duration) {
+  if (duration === undefined)  duration = this.actualEnd - this.actualStart; 
+
+    var start = this.actualStart + duration;
+    var end = this.actualEnd + duration;
+    this.set(start, end);
+}
+
+/** 
+ * Shifts start and end values backward
+ *  If no limits are set the time will shift indefinitely
+ * 
+ * @param {number}
+ * 
+ * @return this.start
+ * @return this.end
+ */
+DateRange.prototype.shiftBackward = function(duration) {
+  if (duration === undefined)  duration = this.actualEnd - this.actualStart; 
+  
+  var start = this.actualStart - duration;
+  var end = this.actualEnd - duration;
+  this.set(start, end);
+}
+
+/** 
+ * sets range values when options.contains
+ * if range is fully in/out of limits or if overlaps
+ *
+ * @return this.start
+ * @return this.end
+ */
+DateRange.prototype._containIntersect = function() {
+  var lowerLimit = this.lowerLimit;
+  var upperLimit = this.upperLimit;
+  var actualStart = this.actualStart;
+  var actualEnd = this.actualEnd;
+    
+  if(upperLimit < actualEnd) {
+    this.start = moment(actualStart - (actualEnd - upperLimit)); 
+    this.end = upperLimit;
+
+    if (this.start < lowerLimit) {
+      this.start = lowerLimit;
+    }
+  }
+  else if (actualStart < lowerLimit) {
+    this.start = lowerLimit;
+    this.end = moment(actualEnd + (lowerLimit - actualStart));
+
+    if (upperLimit < this.end) {
+      this.end = upperLimit;
+    }
+  }
+  else {
+    this.start = actualStart;
+    this.end = actualEnd;
+  }
+  this._setDuration();
+}
+
+/** 
+ * Shifts start and end values forward/backward
+ *  If no limits are set the time will shift indefinitely
+ * 
+ * @param {+/-number}
+ * 
+ * @return this.start
+ * @return this.end
+ */
+DateRange.prototype.shift = function(duration) {
+  this.shiftForward(duration)
+}
+
+
+/**
+ * Formats the start and end dates
+ * 
+ * @param {string} - format start/ format end
+ * @param {string} - delimiter
+ * 
+ * @return {string}
+ */
+DateRange.prototype.format = function(formatStart, formatEnd, delimiter) {
+   var start = (formatStart) ? this.start.format(formatStart) : '';
+   var end = (formatEnd) ?  this.end.format(formatEnd) : '';
+
+   return (start && end) ? [start,end].join(delimiter || ' ') : start || end; 
+} 
 
 //-----------------------------------------------------------------------------
 // Moment Extensions
@@ -462,10 +721,6 @@ moment.fn.within = function(range) {
 //-----------------------------------------------------------------------------
 
 
-
-return DateRange;
-
-}));
 
 return DateRange;
 
