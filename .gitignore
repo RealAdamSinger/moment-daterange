@@ -2,3 +2,4 @@ node_modules/
 docs/
 tags
 /.idea
+.vscode/
