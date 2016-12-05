@@ -940,6 +940,9 @@ describe('DateRange', function() {
 
        range.actualStart.isSame(start).should.be.true;
        range.actualEnd.isSame(end).should.be.true;
+
+       expect(range.atStart).to.be.false;
+       expect(range.atEnd).to.be.true;
     })
 
     it('should return undefinded when the limit is outside of range', function() {
@@ -954,6 +957,9 @@ describe('DateRange', function() {
       });
       expect(range.start).to.be.an('undefined');
       expect(range.end).to.be.an('undefined');
+
+      expect(range.atStart).to.be.false;
+      expect(range.atEnd).to.be.false;
     })
   })
 
@@ -1278,6 +1284,9 @@ describe('DateRange', function() {
 
           range.start.isSame(moment("2011-02-01T00:00:00.000Z")).should.be.true;
           range.end.isSame(moment("2011-02-05T00:00:00.000Z")).should.be.true;
+
+          expect(range.atStart).to.be.true;
+          expect(range.atEnd).to.be.false;
     })
 
     it('should shift short range after limits inside of limits', function() {
@@ -1293,6 +1302,9 @@ describe('DateRange', function() {
 
          range.start.isSame(moment("2011-03-28T00:00:00.000Z")).should.be.true;
          range.end.isSame(moment("2011-03-31T00:00:00.000Z")).should.be.true;
+
+          expect(range.atStart).to.be.false;
+          expect(range.atEnd).to.be.true;
     })
 
     it('should shift long range before limits to be limits', function() {
@@ -1308,6 +1320,9 @@ describe('DateRange', function() {
 
           range.start.isSame(moment("2011-03-01T00:00:00.000Z")).should.be.true;
           range.end.isSame(moment("2011-03-05T00:00:00.000Z")).should.be.true;
+
+          expect(range.atStart).to.be.true;
+          expect(range.atEnd).to.be.true;
       }) 
 
     it('should shift long range after limits to be limits', function() {
@@ -1323,6 +1338,9 @@ describe('DateRange', function() {
 
           range.start.isSame(moment("2011-03-01T00:00:00.000Z")).should.be.true;
           range.end.isSame(moment("2011-03-31T00:00:00.000Z")).should.be.true;
+
+          expect(range.atStart).to.be.true;
+          expect(range.atEnd).to.be.true;
     })
 
     it('should shift overlap short range before limits to be inside limits', function() {
@@ -1338,6 +1356,9 @@ describe('DateRange', function() {
 
           range.start.isSame(moment("2011-03-04T00:00:00.000Z")).should.be.true;
           range.end.isSame(moment("2011-03-08T00:00:00.000Z")).should.be.true;
+
+          expect(range.atStart).to.be.true;
+          expect(range.atEnd).to.be.false;
     })
 
     it('should shift overlap short range after limits to be inside limits', function() {
@@ -1353,6 +1374,9 @@ describe('DateRange', function() {
 
           range.start.isSame(moment("2011-03-05T00:00:00.000Z")).should.be.true;
           range.end.isSame(moment("2011-03-15T00:00:00.000Z")).should.be.true;
+
+          expect(range.atStart).to.be.false;
+          expect(range.atEnd).to.be.true;
     })
 
     it('should shift overlap long range before limits to be limits', function() {
@@ -1368,6 +1392,9 @@ describe('DateRange', function() {
 
           range.start.isSame(moment("2011-03-05T00:00:00.000Z")).should.be.true;
           range.end.isSame(moment("2011-03-08T00:00:00.000Z")).should.be.true;
+
+          expect(range.atStart).to.be.true;
+          expect(range.atEnd).to.be.true;
     })
 
     it('should shift overlap long range after limits to be limits', function() {
@@ -1383,6 +1410,9 @@ describe('DateRange', function() {
 
           range.start.isSame(moment("2011-03-01T00:00:00.000Z")).should.be.true;
           range.end.isSame(moment("2011-03-15T00:00:00.000Z")).should.be.true;
+
+          expect(range.atStart).to.be.true;
+          expect(range.atEnd).to.be.true;
     })
 
     it('should be acutal start and end if both values within limit', function() {
@@ -1398,6 +1428,9 @@ describe('DateRange', function() {
 
           range.start.isSame(moment("2011-03-03T00:00:00.000Z")).should.be.true;
           range.end.isSame(moment("2011-03-06T00:00:00.000Z")).should.be.true;
+
+          expect(range.atStart).to.be.false;
+          expect(range.atEnd).to.be.false;
     })
   })
 
