@@ -462,19 +462,24 @@ DateRange.prototype._intersect = function() {
   if(upperLimit < actualStart || actualEnd < lowerLimit) {
     //if does not overlap
     this.start = this.end = undefined;    
+    this.atEnd = this.atStart = false;
   } 
   else {
     //if overlaps
     if (actualStart <= lowerLimit) {
       this.start = lowerLimit;
+      this.atStart = true;
     } else {
       this.start = actualStart;
+      this.atStart = false;
     }
 
     if (actualEnd <= upperLimit) {
       this.end = actualEnd;
+      this.atEnd = false;
     } else {
-      this.end = upperLimit; 
+      this.end = upperLimit;
+      this.atEnd = true ;
     }
   }
   this._setDuration();
@@ -618,22 +623,30 @@ DateRange.prototype._containIntersect = function() {
   if(upperLimit < actualEnd) {
     this.start = moment(actualStart - (actualEnd - upperLimit)); 
     this.end = upperLimit;
+    this.atStart = false;
+    this.atEnd = true;
 
     if (this.start < lowerLimit) {
       this.start = lowerLimit;
+      this.atStart = true;
     }
   }
   else if (actualStart < lowerLimit) {
     this.start = lowerLimit;
     this.end = moment(actualEnd + (lowerLimit - actualStart));
+    this.atStart = true;
+    this.atEnd = false;
 
     if (upperLimit < this.end) {
       this.end = upperLimit;
+      this.atEnd = true;
     }
   }
   else {
     this.start = actualStart;
     this.end = actualEnd;
+    this.atStart = false;
+    this.atEnd = false;
   }
   this._setDuration();
 }
