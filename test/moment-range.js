@@ -1565,4 +1565,23 @@ describe('DateRange', function() {
         range.upperLimit.isSame("2011-03-07T00:00:00.000Z").should.be.true;
     })
   })
+
+  describe('shiftLimitBackward()', function() {
+    it('should shift the limit backwards', function () {
+        var start = moment.utc("2011-02-02T00:00:00.000Z");
+        var end = moment.utc("2011-03-08T00:00:00.000Z");
+        var lowerLimit = moment.utc("2011-02-01T00:00:00.000Z");
+        var upperLimit = moment.utc("2011-03-06T00:00:00.000Z");
+        var range = moment.range(start, end, {
+          lowerLimit,
+          upperLimit
+        });
+
+        range.shiftLimitBackward(moment.duration(2, 'days'));
+
+        range.lowerLimit.isSame("2011-01-30T00:00:00.000Z").should.be.true;
+        range.upperLimit.isSame("2011-03-04T00:00:00.000Z").should.be.true;
+    })
+  })
+
 }); //final describe
