@@ -1546,4 +1546,23 @@ describe('DateRange', function() {
         (rangeFormat).should.be.eql("February");
     })
   })
+
+  describe('#shiftLimitForward()', function() {
+    
+    it('should shift the limit forward', function() {
+        var start = moment.utc("2011-02-02T00:00:00.000Z");
+        var end = moment.utc("2011-03-08T00:00:00.000Z");
+        var lowerLimit = moment.utc("2011-02-01T00:00:00.000Z");
+        var upperLimit = moment.utc("2011-03-06T00:00:00.000Z");
+        var range = moment.range(start, end, {
+          lowerLimit,
+          upperLimit
+        });
+
+        range.shiftLimitForward(moment.duration(1,'day'));
+      
+        range.lowerLimit.isSame("2011-02-02T00:00:00.000Z").should.be.true;
+        range.upperLimit.isSame("2011-03-07T00:00:00.000Z").should.be.true;
+    })
+  })
 }); //final describe
