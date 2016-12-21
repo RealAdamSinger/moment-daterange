@@ -1546,4 +1546,95 @@ describe('DateRange', function() {
         (rangeFormat).should.be.eql("February");
     })
   })
+
+  describe('#shiftLimitForward()', function() {
+    
+    it('should shift the limit forward', function() {
+        var start = moment.utc("2011-02-02T00:00:00.000Z");
+        var end = moment.utc("2011-03-08T00:00:00.000Z");
+        var lowerLimit = moment.utc("2011-02-01T00:00:00.000Z");
+        var upperLimit = moment.utc("2011-03-06T00:00:00.000Z");
+        var range = moment.range(start, end, {
+          lowerLimit,
+          upperLimit
+        });
+
+        range.shiftLimitForward(moment.duration(1,'day'));
+      
+        range.lowerLimit.isSame("2011-02-02T00:00:00.000Z").should.be.true;
+        range.upperLimit.isSame("2011-03-07T00:00:00.000Z").should.be.true;
+    })
+  })
+
+  describe('shiftLimitBackward()', function() {
+    it('should shift the limit backwards', function () {
+        var start = moment.utc("2011-02-02T00:00:00.000Z");
+        var end = moment.utc("2011-03-08T00:00:00.000Z");
+        var lowerLimit = moment.utc("2011-02-01T00:00:00.000Z");
+        var upperLimit = moment.utc("2011-03-06T00:00:00.000Z");
+        var range = moment.range(start, end, {
+          lowerLimit,
+          upperLimit
+        });
+
+        range.shiftLimitBackward(moment.duration(2, 'days'));
+
+        range.lowerLimit.isSame("2011-01-30T00:00:00.000Z").should.be.true;
+        range.upperLimit.isSame("2011-03-04T00:00:00.000Z").should.be.true;
+    })
+  })
+
+  describe('#shiftLimit()', function() {
+    it('should shift the limit using + duration value', function() {
+        var start = moment.utc("2011-02-02T00:00:00.000Z");
+        var end = moment.utc("2011-03-08T00:00:00.000Z");
+        var lowerLimit = moment.utc("2011-02-01T00:00:00.000Z");
+        var upperLimit = moment.utc("2011-03-06T00:00:00.000Z");
+        var range = moment.range(start, end, {
+          lowerLimit,
+          upperLimit
+        });
+
+        range.shiftLimit(+86400000);
+      
+        range.lowerLimit.isSame("2011-02-02T00:00:00.000Z").should.be.true;
+        range.upperLimit.isSame("2011-03-07T00:00:00.000Z").should.be.true;
+    })
+
+    it('should shift the limit using - duration value', function() {
+        var start = moment.utc("2011-02-02T00:00:00.000Z");
+        var end = moment.utc("2011-03-08T00:00:00.000Z");
+        var lowerLimit = moment.utc("2011-02-01T00:00:00.000Z");
+        var upperLimit = moment.utc("2011-03-06T00:00:00.000Z");
+        var range = moment.range(start, end, {
+          lowerLimit,
+          upperLimit
+        });
+
+        range.shiftLimit(-172800000);
+
+        range.lowerLimit.isSame("2011-01-30T00:00:00.000Z").should.be.true;
+        range.upperLimit.isSame("2011-03-04T00:00:00.000Z").should.be.true;
+    })
+  })
+
+  describe("#shiftAll", function() {
+    it('should shift actual start/end, and upper/lower limits', function() {
+        var start = moment.utc("2011-02-02T00:00:00.000Z");
+        var end = moment.utc("2011-03-08T00:00:00.000Z");
+        var lowerLimit = moment.utc("2011-02-01T00:00:00.000Z");
+        var upperLimit = moment.utc("2011-03-06T00:00:00.000Z");
+        var range = moment.range(start, end, {
+          lowerLimit,
+          upperLimit
+        });
+
+        range.shiftAll(172800000);
+
+        range.upperLimit.isSame("2011-03-08T00:00:00.000Z").should.be.true;
+        range.lowerLimit.isSame("2011-02-03T00:00:00.000Z").should.be.true;
+        range.actualStart.isSame("2011-02-04T00:00:00.000Z").should.be.true;
+        range.actualEnd.isSame("2011-03-10T00:00:00.000Z").should.be.true;
+    })
+  })
 }); //final describe
