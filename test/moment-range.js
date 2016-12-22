@@ -1022,7 +1022,7 @@ describe('DateRange', function() {
     })
   })
 
-    describe('#setUpperLimit', function() {
+    describe('#setUpperLimit()', function() {
       it('should only set the Upper limit', function() {
         var newUpperLimit = moment("2011-05-03T00:00:00.000Z");
         var start = moment("2011-01-01T00:00:00.000Z");
@@ -1041,7 +1041,7 @@ describe('DateRange', function() {
     })
   })
 
-  describe('#clear', function() {
+  describe('#clear()', function() {
     it('should clear start, clear end with empty args', function() {
         var start = moment("2011-01-01T00:00:00.000Z");
         var end = moment("2011-05-06T00:00:00.000Z");
@@ -1103,7 +1103,7 @@ describe('DateRange', function() {
     })
   })
 
-  describe('#clearLimits', function() {
+  describe('#clearLimits()', function() {
     it('should clear lower, clear upper with empty args', function() {
         var start = moment("2011-01-01T00:00:00.000Z");
         var end = moment("2011-05-06T00:00:00.000Z");
@@ -1432,6 +1432,40 @@ describe('DateRange', function() {
           expect(range.atStart).to.be.false;
           expect(range.atEnd).to.be.false;
     })
+
+    it('should use Math.max to set correct values for start', function() {
+          var start = moment("2000-02-01T00:00:00.000Z");
+          var end = moment("2000-02-02T00:00:00.000Z");
+          var lowerLimit = moment("2000-01-01T00:00:00.000Z");
+          var upperLimit = moment("2000-03-01T00:00:00.000Z");
+          var range = moment.range(start, end, {
+            lowerLimit,
+            upperLimit,
+            contain: true
+          });
+
+          range.clear();
+
+          range.start.isSame(moment("2000-01-01T00:00:00.000Z")).should.be.true;
+          range.end.isSame(moment("2000-03-01T00:00:00.000Z")).should.be.true;
+    })
+
+    it('should use Math.max to set correct values for start', function() {
+          var start = moment("2000-02-01T00:00:00.000Z");
+          var end = moment("2000-02-02T00:00:00.000Z");
+          var lowerLimit = moment("2000-01-01T00:00:00.000Z");
+          var upperLimit = moment("2000-03-01T00:00:00.000Z");
+          var range = moment.range(start, end, {
+            lowerLimit,
+            upperLimit,
+            contain: true
+          });
+
+          range.clear();
+
+          range.start.isSame(moment("2000-01-01T00:00:00.000Z")).should.be.true;
+          range.end.isSame(moment("2000-03-01T00:00:00.000Z")).should.be.true;
+    })
   })
 
   describe('#shift()', function() {
@@ -1485,7 +1519,7 @@ describe('DateRange', function() {
     })
   })
 
-  describe('#format', function() {
+  describe('#format()', function() {
     it('should format both dates with set delimiter', function() {
         var start = moment.utc("2011-03-02T00:00:00.000Z");
         var end = moment.utc("2011-03-08T00:00:00.000Z");
@@ -1566,7 +1600,7 @@ describe('DateRange', function() {
     })
   })
 
-  describe('shiftLimitBackward()', function() {
+  describe('#shiftLimitBackward()', function() {
     it('should shift the limit backwards', function () {
         var start = moment.utc("2011-02-02T00:00:00.000Z");
         var end = moment.utc("2011-03-08T00:00:00.000Z");
@@ -1618,7 +1652,7 @@ describe('DateRange', function() {
     })
   })
 
-  describe("#shiftAll", function() {
+  describe("#shiftAll()", function() {
     it('should shift actual start/end, and upper/lower limits', function() {
         var start = moment.utc("2011-02-02T00:00:00.000Z");
         var end = moment.utc("2011-03-08T00:00:00.000Z");
