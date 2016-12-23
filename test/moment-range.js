@@ -1449,6 +1449,23 @@ describe('DateRange', function() {
           range.start.isSame(moment("2000-02-01T00:00:00.000Z")).should.be.true;
           range.end.isSame(moment("2000-02-02T00:00:00.000Z")).should.be.true;
     })
+
+    it('should use Math.min to set correct values for end', function() {
+          var start = moment("2000-02-01T00:00:00.000Z");
+          var end = moment("2000-02-02T00:00:00.000Z");
+          var lowerLimit = moment("2000-01-01T00:00:00.000Z");
+          var upperLimit = moment("2000-03-01T00:00:00.000Z");
+          var range = moment.range(start, end, {
+            contain: true
+          });
+
+          range.shiftLimit(-(moment.duration(1,'day')));
+
+          range.lowerLimit.isSame(moment("-271821-04-20T00:00:00.000Z")).should.be.true;
+          range.upperLimit.isSame(moment("+275760-09-12T00:00:00.000Z")).should.be.true;
+          range.start.isSame(moment("2000-02-01T00:00:00.000Z")).should.be.true;
+          range.end.isSame(moment("2000-02-02T00:00:00.000Z")).should.be.true;
+    })
   })
 
   describe('#shift()', function() {
