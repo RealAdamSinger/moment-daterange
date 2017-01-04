@@ -19,6 +19,8 @@
 //-----------------------------------------------------------------------------
 
 
+var max = +8640000000000000;
+var min = -8640000000000000;
 
 var INTERVALS = {
   year:   true,
@@ -354,8 +356,9 @@ DateRange.prototype.parseRange = function (start, end) {
      }
     }
 
-  return [(!start) ? moment(-8640000000000000) : moment(start),
-          (!end) ? moment(8640000000000000) : moment(end)];
+  return [(!start || start < min) ? moment(min) : moment(start),
+          (!end || end > max) ? moment(max) : moment(end)];
+
 }
 
 /**
@@ -621,7 +624,7 @@ DateRange.prototype._containIntersect = function() {
   var actualEnd = this.actualEnd;
     
   if(upperLimit < actualEnd) {
-    this.start = moment(actualStart - (actualEnd - upperLimit)); 
+    this.start = moment(Math.max(+actualStart - (+actualEnd - upperLimit), min)); 
     this.end = upperLimit;
     this.atStart = false;
     this.atEnd = true;
@@ -633,7 +636,7 @@ DateRange.prototype._containIntersect = function() {
   }
   else if (actualStart < lowerLimit) {
     this.start = lowerLimit;
-    this.end = moment(actualEnd + (lowerLimit - actualStart));
+    this.end = moment(Math.min(+actualEnd + (+lowerLimit - actualStart), max));
     this.atStart = true;
     this.atEnd = false;
 
@@ -679,6 +682,66 @@ DateRange.prototype.format = function(formatStart, formatEnd, delimiter) {
 
    return (start && end) ? [start,end].join(delimiter || ' ') : start || end; 
 } 
+
+/** 
+ * Shifts lower and upper limits forward
+ * 
+ * @param {number}
+ * 
+ * @return this.upperLimit
+ * @return this.lowerLimit
+ */
+DateRange.prototype.shiftLimitForward = function(duration) {
+  if (duration === undefined)  duration = this.upperLimit - this.lowerLimit; 
+
+    var lowerLimit = this.lowerLimit + duration;
+    var upperLimit = this.upperLimit + duration;
+    this.setLimit(lowerLimit, upperLimit);
+}
+
+/** 
+ * Shifts lower and upper limits backward
+ * 
+ * @param {number}
+ * 
+ * @return this.upperLimit
+ * @return this.lowerLimit
+ */
+DateRange.prototype.shiftLimitBackward = function(duration) {
+  if (duration === undefined)  duration = this.upperLimit - this.lowerLimit; 
+  
+  var lowerLimit = this.lowerLimit - duration;
+  var upperLimit = this.upperLimit - duration;
+    this.setLimit(lowerLimit, upperLimit);
+}
+
+/** 
+ * Shifts lower and upper limits forward/backward
+ * 
+ * @param {+/-number}
+ * 
+ * @return this.upperLimit
+ * @return this.lowerLimit
+ */
+DateRange.prototype.shiftLimit = function(duration) {
+  this.shiftLimitForward(duration)
+}
+
+/** 
+ * Shifts upperLimit, lowerLimit, actualStart, actualEnd
+ * 
+ * @param {+/-number}
+ * 
+ * @return this.upperLimit
+ * @return this.lowerLimit
+ * @return this.actualStart
+ * @return this.actualEnd
+ */
+DateRange.prototype.shiftAll = function(duration) {
+  this.shiftLimitForward(duration);
+  this.shiftForward(duration);
+}
+
 
 //-----------------------------------------------------------------------------
 // Moment Extensions
