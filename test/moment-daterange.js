@@ -19,6 +19,18 @@ describe('Moment', function() {
     or2 = moment.range('2011-03-05', null);
   });
 
+  describe('instances are recognizable', function() {
+    it('instanceof moment.range should return true for moment.range objects', function() {
+      dr = moment.range(m1, m2);
+      (dr instanceof moment.range).should.be.true;      
+    });
+
+    it('moment.range.isRange should return true for moment.range objects', function() {
+      dr = moment.range(m1, m2);
+      moment.range.isRange(dr).should.be.true;      
+    });
+  });
+
   describe('#range()', function() {
     it('should return a DateRange with start & end properties', function() {
       dr = moment.range(m1, m2);
