@@ -4,7 +4,7 @@
 var should    = require('should');
 var moment    = require('moment');
 var expect = require('chai').expect;
-require('../lib/moment-range');
+require('../lib/moment-daterange');
 
 describe('Moment', function() {
   var dr, m1, m2, mStart, mEnd, or, or2;

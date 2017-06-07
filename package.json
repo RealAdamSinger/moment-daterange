@@ -7,7 +7,7 @@
   ],
   "homepage": "https://github.com/RealAdamSinger/moment-daterange",
   "bugs": "https://github.com/RealAdamSinger/moment-daterange/issues",
-  "main": "./dist/moment-range",
+  "main": "./dist/moment-daterange",
   "directories": {
     "lib": "./lib"
   },

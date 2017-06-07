@@ -402,7 +402,7 @@ npm run-script jsdoc
 
 ## License
 
-moment-range is [licensed (MIT)][unlicense].
+moment-daterange is [licensed (MIT)][unlicense].
 
 [interval]: http://en.wikipedia.org/wiki/ISO_8601#Time_intervals
 [moment]: http://momentjs.com/

@@ -1,7 +1,7 @@
 {
-  "name": "moment-range",
+  "name": "moment-daterange",
   "version": "2.1.0",
-  "main": "./dist/moment-range.js",
+  "main": "./dist/moment-daterange.js",
   "ignore": [
     "**/.*",
     "node_modules",
