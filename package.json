@@ -9,13 +9,13 @@
   "bugs": "https://github.com/RealAdamSinger/moment-daterange/issues",
   "main": "./dist/moment-daterange",
   "files": [
-    "./lib",
-    "./dist"
+    "lib/",
+    "dist/"
   ],
   "directories": {
     "lib": "./lib"
   },
-  "version": "3.0.3",
+  "version": "3.0.4",
   "engines": {
     "node": "*"
   },
