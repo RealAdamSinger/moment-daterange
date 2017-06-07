@@ -1,8 +1,53 @@
-# moment-range
+# moment-daterange
 
 Fancy date ranges for [Moment.js][moment].
 
-Detailed API documentation can be found at: http://gf3.github.io/moment-range/DateRange.html
+|       Date Range          |      Type       | 
+|----------------|-----------------| 
+| start          | Moment          | 
+| end            | Moment          | 
+| duration       | Moment.duration | 
+| Limit Range    | Type            | 
+| upperLimit     | Moment          | 
+| lowerLimit     | Moment          | 
+| limitDuration  | Moment.duration | 
+| limitRange     | Range           | 
+| Actual Range   | Type            | 
+| actualStart    | Moment          | 
+| actualEnd      | Moment          | 
+| actualDuration | Moment.duration | 
+| actualRange    | Range           | 
+
+| Date Range                          | Arguments                                                 | Behaviour                                                                                                                                                                      |  | 
+|-------------------------------------|-----------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--| 
+| set(Date, [Date])                 | 1. Date: Start date to set                                | Sets either the start date, the end date, or both.                                                                                                                           |  | 
+|                                   | 2. Date: End date to set                                  | null or undefined values will clear the date.                                                                                                                                  |  | 
+| set(Range)                          |      1. Range: The range to set                                                    |                                                                                                                                                                                |  | 
+| setStart(Date)                      | 1. Date: Start date to set                                |                                                                                                                                                                                |  | 
+| setEnd(Date)                        | 1. Date: End date to set                                  |                                                                                                                                                                                |  | 
+| clear([Boolean], [Boolean])       | 1. Boolean: true clears start date, false does nothing  | Clears the start, end, or both.                                                                                                                                              |  | 
+|                                     | 2. Boolean: true clears end date, false does nothing    | Undefined parameters clear both.                                                                                                                                               |  | 
+
+| Limiting Time                       | Arguments                                                 | Behaviour                                                                                                                                                                      |  |  
+|-------------------------------------|-----------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--| 
+| setLimit(Date, Date)              | 1. Date: Lower limit to set                               | Sets either the lower limit, the upper limit, or both.                                                                                                                       |  | 
+|                                     | 2. Date: Upper limit to set                               | null or undefined values will clear the limit.                                                                                                                                 |  | 
+| setLowerLimit(Date)                 | 1. Date: Lower limit to set                               |                                                                                                                                                                                |  | 
+| setUpperLimit(Date)                 | 1. Date: Upper limit to set                               |                                                                                                                                                                                |  | 
+| clearLimits([Boolean], [Boolean]) | 1. Boolean: true clears lower limit, false does nothing | Clears the upper limit, lower limit, or both.                                                                                                                                |  | 
+|                                     | 2. Boolean: true clears upper limit, false does nothing | Undefined parameters clear both.                                                                                                                                               |  | 
+
+| Shifting Time                       | Arguments                                                 | Behaviour                                                                                                                                                                      |  | 
+|-------------------------------------|-----------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--| 
+| shiftForward([Duration])            | 1. Duration: The duration to shift forward                | Shifts the date range forward or backward.                                                                                                                                     |  | 
+| shiftBackward([Duration])           | 1. Duration: The duration to shift backward               | If the shifting attempts to go beyond the set limits, the date range will stop at the limit will not shift beyond it. If no limits are set the time will shift indefinitely. |  | 
+| shift(Duration)                     | 1. Duration: The duration to shift (+/-)                  | The shift method accepts positive and negative values. Omitting the optional duration will shift the duration of the date rage.                                                |  | 
+| shiftLimitForward([Duration])       | 1. Duration: The duration to shift limit forward          | Shifts the upper and lower limit forward or backward.                                                                                                                          |  | 
+| shiftLimitBackward([Duration])      | 1. Duration: The duration to shift limit backward         | The shift method accepts positive and negative values. Omitting the optional duration will shift the duration of the limit.                                                    |  | 
+| shiftLimit(Duration)                | 1. Duration: The duration to shift limit (+/-)            |                                                                                                                                                                                |  | 
+
+
+
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
@@ -313,51 +358,32 @@ dr2.start.toDate() === dr.start.toDate() // false
 
 ## Installation
 
-moment-range works in both the browser and [node.js][node].
+moment-daterange works in both the browser and [node.js][node].
 
 ### Node / NPM
 
 Install via npm:
 
 ``` sh
-npm install moment-range
+npm install moment-daterange
 ```
 
 And then `require` it:
 
 ``` javascript
 var moment = require('moment');
-require('moment-range');
+require('moment-daterange');
 ```
 
 ### Browser
 
-Simply include moment-range after moment.js:
+Simply include moment-daterange after moment.js:
 
 ``` html
 <script src="moment.js"></script>
-<script src="moment-range.js"></script>
+<script src="moment.daterange.js"></script>
 ```
-
-Thanks to the fine people at [cdnjs][cdnjs], you can link to moment-range from
-the [cdnjs servers][cdnjs-moment-range].
-
-### Bower
-
-``` sh
-bower install moment-range
-```
-
-**Note:** Include `moment-range` _after_ `moment`.
-
-
 ## Running Tests
-
-Clone this bad boy:
-
-``` bash
-git clone https://git@github.com/gf3/moment-range.git
-```
 
 Install the dependencies:
 
@@ -376,11 +402,9 @@ npm run-script jsdoc
 
 ## License
 
-moment-range is [UNLICENSED][unlicense].
+moment-daterange is [licensed (MIT)][unlicense].
 
-[cdnjs]: https://github.com/cdnjs/cdnjs
-[cdnjs-moment-range]: https://cdnjs.com/libraries/moment-range
 [interval]: http://en.wikipedia.org/wiki/ISO_8601#Time_intervals
 [moment]: http://momentjs.com/
 [node]: http://nodejs.org/
-[unlicense]: http://unlicense.org/
+[unlicense]: https://github.com/RealAdamSinger/moment-daterange/blob/master/LICENSE.md

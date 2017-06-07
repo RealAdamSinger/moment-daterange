@@ -17,7 +17,7 @@ module.exports = function(grunt) {
       },
       dist: {
         files: {
-          'dist/moment-range.js': 'lib/moment-range.js'
+          'dist/moment-daterange.js': 'lib/moment-daterange.js'
         }
       }
     },
@@ -33,8 +33,8 @@ module.exports = function(grunt) {
 
     replace: {
       example: {
-        src: ['dist/moment-range.js'],
-        dest: 'dist/moment-range.js',
+        src: ['dist/moment-daterange.js'],
+        dest: 'dist/moment-daterange.js',
         replacements: [{
           from: 'var moment = require(\'moment\');',
           to: ''
@@ -47,17 +47,17 @@ module.exports = function(grunt) {
     },
 
     uglify: {
-      'moment-range': {
+      'moment-daterange': {
         files: {
-          'dist/moment-range.min.js': ['dist/moment-range.js']
+          'dist/moment-daterange.min.js': ['dist/moment-daterange.js']
         }
       }
     },
 
     umd: {
       all: {
-        src: 'dist/moment-range.js',
-        dest: 'dist/moment-range.js',
+        src: 'dist/moment-daterange.js',
+        dest: 'dist/moment-daterange.js',
         globalAlias: 'DateRange',
         objectToExport: 'DateRange',
         deps: {
