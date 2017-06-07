@@ -8,14 +8,14 @@
   "homepage": "https://github.com/RealAdamSinger/moment-daterange",
   "bugs": "https://github.com/RealAdamSinger/moment-daterange/issues",
   "main": "./dist/moment-daterange",
-  "files": {
-    "lib": "./lib",
-    "dist": "./dist"
-  },
+  "files": [
+    "./lib",
+    "./dist"
+  ],
   "directories": {
     "lib": "./lib"
   },
-  "version": "3.0.2",
+  "version": "3.0.3",
   "engines": {
     "node": "*"
   },
