@@ -9,7 +9,8 @@
   "bugs": "https://github.com/RealAdamSinger/moment-daterange/issues",
   "main": "./dist/moment-daterange",
   "directories": {
-    "lib": "./lib"
+    "lib": "./lib",
+    "dist": "./dist"
   },
   "version": "3.0.0",
   "engines": {
@@ -18,7 +19,8 @@
   "scripts": {
     "build": "grunt es6transpiler replace umd uglify",
     "jsdoc": "jsdoc -c .jsdoc",
-    "test": "grunt mochaTest"
+    "test": "grunt mochaTest",
+    "prepublish": "npm run build"
   },
   "devDependencies": {
     "grunt": "~0.4.1",
